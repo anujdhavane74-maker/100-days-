@@ -130,3 +130,4 @@ describe('Streak and Day Status Calculation Rules', () => {
     expect(streak.completionPercentage).toBe(100);
   });
 });
+

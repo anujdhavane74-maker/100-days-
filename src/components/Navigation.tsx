@@ -49,10 +49,10 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <>
-      {/* Desktop / Tablet Sub-Header Navigation Bar */}
-      <nav className="bg-racing-card/90 border-b border-racing-border hidden md:block">
+      {/* Desktop Frosted Glass Nav */}
+      <nav className="hidden md:block sticky top-16 sm:top-20 z-30 bg-slate-950/40 backdrop-blur-md border-b border-white/10 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-1 sm:space-x-2 overflow-x-auto py-2">
+          <div className="flex space-x-2 overflow-x-auto py-2.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -60,24 +60,20 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <button
                   key={item.id}
                   onClick={() => onChangeTab(item.id)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-racing-red ${
+                  className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-mono font-medium transition-all whitespace-nowrap focus:outline-none ${
                     isActive
-                      ? 'bg-racing-red text-white shadow-red-glow font-semibold'
-                      : 'text-racing-textMuted hover:text-white hover:bg-racing-surface'
+                      ? 'bg-white/15 text-white border border-white/25 shadow-lg backdrop-blur-md font-bold'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-red-400' : 'text-slate-400'}`} />
                   <span>{item.label}</span>
                   {item.badge && (
                     <span
-                      className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
+                      className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold ${
                         item.badge === 'DONE'
-                          ? isActive
-                            ? 'bg-white/20 text-white'
-                            : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                          : isActive
-                          ? 'bg-white/20 text-white'
-                          : 'bg-racing-amber/20 text-racing-amber border border-racing-amber/40 animate-pulse'
+                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse'
                       }`}
                     >
                       {item.badge}
@@ -90,8 +86,8 @@ export const Navigation: React.FC<NavigationProps> = ({
         </div>
       </nav>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-racing-darker/95 backdrop-blur-md border-t border-racing-border px-2 py-1.5 flex justify-around items-center">
+      {/* Mobile Glass Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-t border-white/10 px-2 py-2 flex justify-around items-center">
         {navItems.slice(0, 5).map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -99,22 +95,21 @@ export const Navigation: React.FC<NavigationProps> = ({
             <button
               key={item.id}
               onClick={() => onChangeTab(item.id)}
-              className={`flex flex-col items-center justify-center p-1.5 rounded-lg text-[10px] font-medium transition-all focus:outline-none ${
-                isActive ? 'text-racing-red' : 'text-racing-textMuted hover:text-white'
+              className={`flex flex-col items-center justify-center p-1.5 rounded-xl text-[10px] font-medium transition-all focus:outline-none ${
+                isActive ? 'text-red-400 font-bold' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-racing-red' : 'text-slate-400'}`} />
+              <Icon className={`w-5 h-5 ${isActive ? 'text-red-400' : 'text-slate-400'}`} />
               <span className="mt-0.5 truncate max-w-[64px]">{item.label.split(' ')[0]}</span>
             </button>
           );
         })}
-        {/* Overflow / More for remaining items */}
         <button
           onClick={() => onChangeTab(activeTab === 'analytics' ? 'timetable-guide' : 'analytics')}
-          className={`flex flex-col items-center justify-center p-1.5 rounded-lg text-[10px] font-medium transition-all focus:outline-none ${
+          className={`flex flex-col items-center justify-center p-1.5 rounded-xl text-[10px] font-medium transition-all focus:outline-none ${
             ['analytics', 'timetable-guide', 'settings'].includes(activeTab)
-              ? 'text-racing-red'
-              : 'text-racing-textMuted hover:text-white'
+              ? 'text-red-400 font-bold'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           <BarChart3 className="w-5 h-5" />

@@ -95,3 +95,4 @@ describe('Analytics Calculations and Precision', () => {
     expect(week1?.consistencyRate).toBe(50); // 1 / 2 = 50%
   });
 });
+

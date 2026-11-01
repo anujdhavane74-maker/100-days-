@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Calendar,
-  Clock,
-  BookOpen,
   Info,
-  ExternalLink,
-  CheckCircle2,
-  AlertCircle,
 } from 'lucide-react';
 import { TimetableDay, GuideRule } from '../types';
 
@@ -22,21 +16,21 @@ export const TimetableGuideView: React.FC<TimetableGuideViewProps> = ({
   const [activeTab, setActiveTab] = useState<'timetable' | 'guide'>('timetable');
 
   return (
-    <div className="space-y-6 animate-fadeIn pb-12">
-      {/* Header & Sub-Tab Switcher */}
-      <div className="racing-card p-6 bg-gradient-to-r from-racing-card via-racing-surface to-racing-darker border-l-4 border-l-racing-red">
+    <div className="space-y-6 animate-fadeIn pb-16">
+      {/* Header */}
+      <div className="glass-panel p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
-              <span className="telemetry-tag bg-racing-red/20 text-racing-red border border-racing-red/40">
-                COLLEGE & SYSTEM REPOSITORY
+              <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-white border border-white/15">
+                Reference Repository
               </span>
-              <span className="text-xs font-mono text-racing-textSubtle">
-                ZEAL FY B.TECH AI & DS • PLANNING RULES
+              <span className="text-xs font-mono text-slate-400">
+                Zeal FY B.Tech AI & DS • Planning Rules
               </span>
             </div>
-            <h1 className="text-2xl font-black text-white mt-1">Timetable & Guide</h1>
-            <p className="text-xs text-racing-textMuted max-w-xl mt-1">
+            <h1 className="text-2xl font-bold text-white mt-1">Timetable & Guide</h1>
+            <p className="text-xs text-slate-300 max-w-xl mt-1">
               Directly imported from your workbook's Timetable and Guide sheets.
             </p>
           </div>
@@ -44,23 +38,23 @@ export const TimetableGuideView: React.FC<TimetableGuideViewProps> = ({
           <div className="flex items-center space-x-2 self-start sm:self-center font-mono text-xs">
             <button
               onClick={() => setActiveTab('timetable')}
-              className={`px-4 py-2 rounded-lg font-bold uppercase transition-all ${
+              className={`px-4 py-2 rounded-xl font-bold uppercase transition-all ${
                 activeTab === 'timetable'
-                  ? 'bg-racing-red text-white shadow-red-glow'
-                  : 'bg-racing-darker text-slate-300 border border-racing-border hover:text-white'
+                  ? 'bg-white/20 text-white border border-white/30 shadow-lg'
+                  : 'bg-white/5 text-slate-400 border border-white/10 hover:text-white'
               }`}
             >
-              TIMETABLE (A2 & A11)
+              Timetable (A2 & A11)
             </button>
             <button
               onClick={() => setActiveTab('guide')}
-              className={`px-4 py-2 rounded-lg font-bold uppercase transition-all ${
+              className={`px-4 py-2 rounded-xl font-bold uppercase transition-all ${
                 activeTab === 'guide'
-                  ? 'bg-racing-red text-white shadow-red-glow'
-                  : 'bg-racing-darker text-slate-300 border border-racing-border hover:text-white'
+                  ? 'bg-white/20 text-white border border-white/30 shadow-lg'
+                  : 'bg-white/5 text-slate-400 border border-white/10 hover:text-white'
               }`}
             >
-              GUIDE & ASSUMPTIONS
+              Guide & Assumptions
             </button>
           </div>
         </div>
@@ -69,9 +63,9 @@ export const TimetableGuideView: React.FC<TimetableGuideViewProps> = ({
       {/* 1. TIMETABLE TAB */}
       {activeTab === 'timetable' && (
         <div className="space-y-6">
-          <div className="racing-card p-5 bg-racing-surface/80 border-l-4 border-l-racing-cyan">
+          <div className="glass-panel p-5">
             <div className="flex items-start space-x-3 text-xs">
-              <Info className="w-5 h-5 text-racing-cyan shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
               <div>
                 <strong className="text-white block font-mono uppercase">
                   Source: Zeal FY B.Tech AI & DS, Div A Timetable (Batches A2 & A11)
@@ -84,17 +78,16 @@ export const TimetableGuideView: React.FC<TimetableGuideViewProps> = ({
             </div>
           </div>
 
-          {/* Timetable Cards by Day */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {timetable.map((dayItem) => (
               <div
                 key={dayItem.day}
-                className="racing-card p-5 flex flex-col justify-between space-y-4"
+                className="glass-card p-5 flex flex-col justify-between space-y-4"
               >
                 <div>
-                  <div className="flex items-center justify-between pb-2 border-b border-racing-border font-mono">
-                    <span className="text-base font-black text-white uppercase">{dayItem.day}</span>
-                    <span className="text-[11px] text-racing-cyan">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-white/10 font-mono">
+                    <span className="text-base font-bold text-white uppercase">{dayItem.day}</span>
+                    <span className="text-[11px] text-cyan-400">
                       Last Class: {dayItem.lastScheduledClass}
                     </span>
                   </div>
@@ -105,15 +98,15 @@ export const TimetableGuideView: React.FC<TimetableGuideViewProps> = ({
                       return (
                         <div
                           key={sIdx}
-                          className={`p-2 rounded flex items-center justify-between ${
+                          className={`p-2 rounded-lg flex items-center justify-between ${
                             slot.isLab
-                              ? 'bg-purple-950/40 text-purple-200 border border-purple-800/40'
+                              ? 'bg-purple-500/20 text-purple-200 border border-purple-500/30'
                               : isNoClass
-                              ? 'bg-racing-darker text-slate-600'
-                              : 'bg-racing-surface text-slate-200 border border-racing-border/50'
+                              ? 'bg-white/5 text-slate-500'
+                              : 'bg-white/10 text-slate-200 border border-white/10'
                           }`}
                         >
-                          <span className="text-[10px] text-racing-textSubtle">{slot.time}</span>
+                          <span className="text-[10px] text-slate-400">{slot.time}</span>
                           <span className="font-semibold text-right truncate max-w-[170px]">
                             {slot.subject}
                           </span>
@@ -124,7 +117,7 @@ export const TimetableGuideView: React.FC<TimetableGuideViewProps> = ({
                 </div>
 
                 {dayItem.planningNote && (
-                  <div className="pt-2 border-t border-racing-border text-[11px] font-mono text-racing-amber">
+                  <div className="pt-2 border-t border-white/10 text-[11px] font-mono text-amber-300">
                     <strong>Note:</strong> {dayItem.planningNote}
                   </div>
                 )}
@@ -137,20 +130,20 @@ export const TimetableGuideView: React.FC<TimetableGuideViewProps> = ({
       {/* 2. GUIDE & RULES TAB */}
       {activeTab === 'guide' && (
         <div className="space-y-4">
-          <div className="racing-card p-6">
-            <h2 className="text-base font-bold text-white uppercase tracking-wider pb-3 border-b border-racing-border font-mono">
-              WORKBOOK RULES & PLANNING ASSUMPTIONS (ALL {guide.length} ENTRIES)
+          <div className="glass-panel p-6">
+            <h2 className="text-base font-bold text-white uppercase tracking-wider pb-3 border-b border-white/10 font-mono">
+              Workbook Rules & Planning Assumptions ({guide.length} Guidelines)
             </h2>
 
-            <div className="divide-y divide-racing-border/50 mt-4 text-xs">
+            <div className="divide-y divide-white/10 mt-4 text-xs">
               {guide.map((rule, idx) => (
                 <div key={idx} className="py-3.5 space-y-1">
                   <div className="flex items-center space-x-2 font-mono">
-                    <span className="telemetry-tag bg-slate-800 text-racing-red font-bold">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/10 text-red-400 border border-white/10">
                       {rule.topic}
                     </span>
                   </div>
-                  <p className="text-slate-200 leading-relaxed pl-1 pt-0.5">
+                  <p className="text-slate-200 leading-relaxed pl-1 pt-1">
                     {rule.rule}
                   </p>
                 </div>

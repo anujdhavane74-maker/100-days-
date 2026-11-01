@@ -4,65 +4,78 @@
 
 @layer base {
   body {
-    @apply bg-racing-bg text-slate-100 antialiased selection:bg-racing-red selection:text-white;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    @apply bg-slate-950 text-slate-100 antialiased selection:bg-red-500/30 selection:text-white font-sans;
   }
 
-  /* Custom subtle scrollbar */
+  /* Sleek modern scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #0d111a;
+    background: rgba(15, 23, 42, 0.4);
   }
   ::-webkit-scrollbar-thumb {
-    background: #243044;
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #ee2737;
+    background: rgba(255, 255, 255, 0.3);
   }
 }
 
-/* Motorsport telemetry accents */
-.racing-border {
-  border: 1px solid #243044;
+/* Simple, elegant Glassmorphism system */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border-radius: 1rem;
 }
 
-.racing-border-red {
-  border-color: rgba(238, 39, 55, 0.4);
+.glass-card {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.875rem;
+  transition: all 0.25s ease;
 }
 
-.racing-gradient-red {
-  background: linear-gradient(135deg, rgba(238, 39, 55, 0.15) 0%, rgba(17, 23, 35, 0.8) 100%);
+.glass-card:hover {
+  background: rgba(15, 23, 42, 0.55);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
 }
 
-.racing-card {
-  @apply bg-racing-card border border-racing-border rounded-xl shadow-card transition-all duration-200;
+.glass-card-active {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 20px -5px rgba(239, 68, 68, 0.3);
 }
 
-.racing-card-hover {
-  @apply hover:border-slate-600 hover:bg-racing-cardHover;
+.glass-input {
+  background: rgba(2, 6, 23, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  color: #fff;
+  transition: all 0.2s ease;
 }
 
-.telemetry-tag {
-  @apply text-xs font-mono tracking-wider uppercase px-2 py-0.5 rounded font-semibold;
+.glass-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
 }
 
-/* Glow effects */
-.glow-red {
-  box-shadow: 0 0 15px rgba(238, 39, 55, 0.25);
+.glass-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
 }
 
-.glow-cyan {
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
-}
-
-.glow-emerald {
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
-}
-
+/* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

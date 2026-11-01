@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import {
-  Flame,
   Plus,
-  CheckCircle2,
-  XCircle,
-  HelpCircle,
-  TrendingUp,
-  BarChart3,
   Calendar,
-  Sparkles,
   ToggleLeft,
   ToggleRight,
 } from 'lucide-react';
-import { ChallengeDay, HabitItem, HabitStatus } from '../types';
+import { ChallengeDay, HabitItem } from '../types';
 import { calculateHabitAnalytics } from '../utils/analytics';
 
 interface HabitsViewProps {
@@ -60,42 +53,40 @@ export const HabitsView: React.FC<HabitsViewProps> = ({
     setShowAddModal(false);
   };
 
-  // 14-day recent completion strip
   const elapsedDays = days.filter((d) => d.date <= currentDate);
   const recentDays = elapsedDays.slice(-14).reverse();
 
   return (
-    <div className="space-y-6 animate-fadeIn pb-12">
+    <div className="space-y-6 animate-fadeIn pb-16">
       {/* Header & Overview */}
-      <div className="racing-card p-6 bg-gradient-to-r from-racing-card via-racing-surface to-racing-darker border-l-4 border-l-racing-red">
+      <div className="glass-panel p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
-              <span className="telemetry-tag bg-racing-red/20 text-racing-red border border-racing-red/40">
-                DAILY DISCIPLINES
+              <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-white border border-white/15">
+                Daily Disciplines
               </span>
-              <span className="text-xs font-mono text-racing-textSubtle">
-                HABIT TELEMETRY & ADHERENCE
+              <span className="text-xs font-mono text-slate-400">
+                Habit Tracking & Adherence
               </span>
             </div>
-            <h1 className="text-2xl font-black text-white mt-1">Daily Habits System</h1>
-            <p className="text-xs text-racing-textMuted max-w-xl mt-1">
+            <h1 className="text-2xl font-bold text-white mt-1">Daily Habits System</h1>
+            <p className="text-xs text-slate-300 max-w-xl mt-1">
               Derived from the workbook's 6 core practices plus speaking, sleep, and energy logs.
-              Habits build your baseline torque.
             </p>
           </div>
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2.5 rounded-lg bg-racing-red hover:bg-racing-redHover text-white font-mono text-xs font-bold uppercase shadow-red-glow flex items-center space-x-1.5 self-start sm:self-center transition-all"
+            className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-mono text-xs font-bold uppercase shadow-lg flex items-center space-x-1.5 self-start sm:self-center transition-all"
           >
-            <Plus className="w-4 h-4" />
-            <span>ADD CUSTOM HABIT</span>
+            <Plus className="w-4 h-4 text-red-400" />
+            <span>Add Custom Habit</span>
           </button>
         </div>
       </div>
 
-      {/* Habit Cards & Analytics */}
+      {/* Habit Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {habits.map((habit) => {
           const stats = habitAnalytics.find((h) => h.habitId === habit.id);
@@ -106,7 +97,7 @@ export const HabitsView: React.FC<HabitsViewProps> = ({
           return (
             <div
               key={habit.id}
-              className={`racing-card p-5 flex flex-col justify-between ${
+              className={`glass-card p-5 flex flex-col justify-between ${
                 !habit.active ? 'opacity-50' : ''
               }`}
             >
@@ -115,16 +106,16 @@ export const HabitsView: React.FC<HabitsViewProps> = ({
                   <div>
                     <div className="flex items-center space-x-2">
                       <h2 className="text-base font-bold text-white">{habit.name}</h2>
-                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/10">
                         {habit.category}
                       </span>
                       {habit.isCustom && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-purple-950 text-purple-300 border border-purple-700">
-                          CUSTOM
+                        <span className="text-[9px] font-mono px-2 py-0.2 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                          Custom
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-racing-textSubtle mt-1">
+                    <p className="text-xs text-slate-400 mt-1">
                       {habit.targetDescription}
                     </p>
                   </div>
@@ -142,32 +133,30 @@ export const HabitsView: React.FC<HabitsViewProps> = ({
                   </button>
                 </div>
 
-                {/* Progress bar */}
                 <div className="mt-4">
-                  <div className="flex items-center justify-between text-xs font-mono mb-1">
-                    <span className="text-racing-textSubtle">ADHERENCE RATE</span>
-                    <span className="font-bold text-racing-cyan">{rate}%</span>
+                  <div className="flex items-center justify-between text-xs font-mono mb-1.5">
+                    <span className="text-slate-400">Adherence Rate</span>
+                    <span className="font-bold text-cyan-400">{rate}%</span>
                   </div>
-                  <div className="w-full bg-racing-darker rounded-full h-2 overflow-hidden border border-racing-border">
+                  <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden border border-white/5">
                     <div
-                      className="bg-gradient-to-r from-racing-red to-racing-cyan h-full rounded-full transition-all duration-500"
+                      className="bg-gradient-to-r from-red-500 to-cyan-400 h-full rounded-full transition-all duration-500"
                       style={{ width: `${Math.min(100, rate)}%` }}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Stats Footer */}
-              <div className="mt-4 pt-3 border-t border-racing-border/60 flex items-center justify-between text-xs font-mono">
-                <span className="text-racing-textMuted">
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-400">
                   Completed: <strong className="text-white">{done}</strong> days
                 </span>
                 {skipped > 0 && (
-                  <span className="text-racing-amber">
+                  <span className="text-amber-400">
                     Skipped: {skipped}
                   </span>
                 )}
-                <span className="text-racing-textSubtle text-[11px]">
+                <span className="text-slate-400 text-[11px]">
                   {habit.active ? 'Active' : 'Archived'}
                 </span>
               </div>
@@ -177,22 +166,22 @@ export const HabitsView: React.FC<HabitsViewProps> = ({
       </div>
 
       {/* 14-Day Recent Matrix */}
-      <div className="racing-card p-5 space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="glass-panel p-5 space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center space-x-2">
-            <Calendar className="w-4 h-4 text-racing-red" />
+            <Calendar className="w-4 h-4 text-red-400" />
             <h2 className="text-sm font-bold text-white uppercase tracking-wider">
-              RECENT 14-DAY HABIT TELEMETRY LOG
+              14-Day Recent Completion Log
             </h2>
           </div>
-          <span className="text-xs font-mono text-racing-textSubtle">CLICK DAY TO EDIT</span>
+          <span className="text-xs font-mono text-slate-400">Click day to edit</span>
         </div>
 
         {recentDays.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-xs font-mono text-left">
               <thead>
-                <tr className="border-b border-racing-border text-racing-textSubtle">
+                <tr className="border-b border-white/10 text-slate-400">
                   <th className="py-2 pr-3">HABIT</th>
                   {recentDays.map((d) => (
                     <th
@@ -206,9 +195,9 @@ export const HabitsView: React.FC<HabitsViewProps> = ({
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-racing-border/40">
+              <tbody className="divide-y divide-white/5">
                 {habits.filter((h) => h.active).map((h) => (
-                  <tr key={h.id} className="hover:bg-racing-surface/50">
+                  <tr key={h.id} className="hover:bg-white/5">
                     <td className="py-2.5 pr-3 text-slate-200 font-medium whitespace-nowrap">
                       {h.name}
                     </td>
@@ -217,19 +206,19 @@ export const HabitsView: React.FC<HabitsViewProps> = ({
                       return (
                         <td key={d.dayNumber} className="px-2 py-2.5 text-center">
                           {status === 'done' ? (
-                            <span className="inline-block w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 font-bold leading-4 border border-emerald-500/40">
+                            <span className="inline-block w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 font-bold leading-4 border border-emerald-500/30">
                               ✓
                             </span>
                           ) : status === 'skipped' ? (
-                            <span className="inline-block w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 font-bold leading-4 border border-amber-500/40">
+                            <span className="inline-block w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 font-bold leading-4 border border-amber-500/30">
                               -
                             </span>
                           ) : d.checkedIn ? (
-                            <span className="inline-block w-4 h-4 rounded-full bg-slate-800 text-slate-500 font-bold leading-4">
+                            <span className="inline-block w-4 h-4 rounded-full bg-white/5 text-slate-500 font-bold leading-4">
                               ✕
                             </span>
                           ) : (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-700" />
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/20" />
                           )}
                         </td>
                       );
@@ -246,11 +235,11 @@ export const HabitsView: React.FC<HabitsViewProps> = ({
 
       {/* Add Custom Habit Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="racing-card p-6 max-w-md w-full bg-racing-card border-racing-red/50 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-racing-border">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+          <div className="glass-panel p-6 max-w-md w-full bg-slate-900/90 border-white/20 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <h2 className="text-base font-bold text-white uppercase tracking-wider">
-                ADD CUSTOM DISCIPLINE
+                Add Custom Discipline
               </h2>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -262,57 +251,57 @@ export const HabitsView: React.FC<HabitsViewProps> = ({
 
             <form onSubmit={handleCreateCustomHabit} className="space-y-4 text-xs font-mono">
               <div>
-                <label className="block text-racing-textSubtle mb-1 uppercase">HABIT NAME</label>
+                <label className="block text-slate-400 mb-1 uppercase">Habit Name</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Cold shower, LeetCode problem, 10 pushups..."
                   value={newHabitName}
                   onChange={(e) => setNewHabitName(e.target.value)}
-                  className="w-full bg-racing-darker border border-racing-border rounded px-3 py-2 text-white focus:outline-none focus:border-racing-red text-sm"
+                  className="w-full glass-input px-3 py-2 text-white text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-racing-textSubtle mb-1 uppercase">CATEGORY</label>
+                <label className="block text-slate-400 mb-1 uppercase">Category</label>
                 <select
                   aria-label="Habit Category"
                   value={newHabitCategory}
                   onChange={(e) => setNewHabitCategory(e.target.value as any)}
-                  className="w-full bg-racing-darker border border-racing-border rounded px-3 py-2 text-white focus:outline-none focus:border-racing-red text-sm"
+                  className="w-full glass-input px-3 py-2 text-white text-sm"
                 >
-                  <option value="custom">Custom</option>
-                  <option value="mindset">Mindset</option>
-                  <option value="health">Health & Fitness</option>
-                  <option value="communication">Communication</option>
-                  <option value="leadership">Leadership</option>
+                  <option value="custom" className="bg-slate-900">Custom</option>
+                  <option value="mindset" className="bg-slate-900">Mindset</option>
+                  <option value="health" className="bg-slate-900">Health & Fitness</option>
+                  <option value="communication" className="bg-slate-900">Communication</option>
+                  <option value="leadership" className="bg-slate-900">Leadership</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-racing-textSubtle mb-1 uppercase">TARGET / RULE</label>
+                <label className="block text-slate-400 mb-1 uppercase">Target Rule</label>
                 <input
                   type="text"
                   placeholder="e.g. 5 minutes every morning before breakfast"
                   value={newHabitDesc}
                   onChange={(e) => setNewHabitDesc(e.target.value)}
-                  className="w-full bg-racing-darker border border-racing-border rounded px-3 py-2 text-white focus:outline-none focus:border-racing-red text-sm"
+                  className="w-full glass-input px-3 py-2 text-white text-sm"
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-3 border-t border-racing-border">
+              <div className="flex items-center justify-end space-x-3 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded bg-racing-surface text-slate-300 hover:text-white border border-racing-border"
+                  className="px-4 py-2 rounded-xl bg-white/5 text-slate-300 hover:text-white border border-white/10"
                 >
-                  CANCEL
+                  Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded bg-racing-red hover:bg-racing-redHover text-white font-bold shadow-red-glow"
+                  className="px-5 py-2 rounded-xl bg-red-600/90 hover:bg-red-500 text-white font-bold shadow-lg"
                 >
-                  CREATE HABIT
+                  Create Habit
                 </button>
               </div>
             </form>

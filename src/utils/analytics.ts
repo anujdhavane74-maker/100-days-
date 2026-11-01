@@ -373,3 +373,4 @@ export function calculateCourseProgress(courses: Course[], tasks: TaskItem[]) {
     };
   });
 }
+

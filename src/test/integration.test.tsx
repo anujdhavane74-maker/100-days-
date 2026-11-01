@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
-import '@testing-library/jest-dom';
 import { App } from '../App';
 
 describe('App Integration and End-to-End User Flows', () => {
@@ -13,30 +12,30 @@ describe('App Integration and End-to-End User Flows', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText(/GROWTH TRACKER/i)).toBeTruthy();
+      expect(screen.getByText(/100-Day Growth Tracker/i)).toBeTruthy();
     });
 
-    expect(screen.getByText(/100-DAY TELEMETRY/i)).toBeTruthy();
-    expect(screen.getByText(/CURRENT STREAK/i)).toBeTruthy();
-    expect(screen.getByText(/100-DAY PROGRESS/i)).toBeTruthy();
-    expect(screen.getByText(/SKILL HOURS/i)).toBeTruthy();
-    expect(screen.getByText(/ACADEMIC HOURS/i)).toBeTruthy();
+    expect(screen.getByText(/Max Verstappen Edition/i)).toBeTruthy();
+    expect(screen.getByText(/Current Streak/i)).toBeTruthy();
+    expect(screen.getByText(/100-Day Progress/i)).toBeTruthy();
+    expect(screen.getByText(/Skill Hours/i)).toBeTruthy();
+    expect(screen.getByText(/Academic Hours/i)).toBeTruthy();
   });
 
   it('navigates to Daily Check-in when action button is clicked', async () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText(/START TODAY’S CHECK-IN/i)).toBeTruthy();
+      expect(screen.getByText(/Start Today’s Check-in/i)).toBeTruthy();
     });
 
-    const startBtn = screen.getByText(/START TODAY’S CHECK-IN/i);
+    const startBtn = screen.getByText(/Start Today’s Check-in/i);
     fireEvent.click(startBtn);
 
     await waitFor(() => {
-      expect(screen.getByText(/RACE STRATEGY & DAY MODE/i)).toBeTruthy();
-      expect(screen.getByText(/PRIMARY MISSION & CONCRETE DELIVERABLE/i)).toBeTruthy();
-      expect(screen.getByText(/DAILY HABITS & PERSONAL ROUTINE/i)).toBeTruthy();
+      expect(screen.getByText(/Day Mode & Strategy/i)).toBeTruthy();
+      expect(screen.getByText(/Primary Mission & Concrete Deliverable/i)).toBeTruthy();
+      expect(screen.getByText(/Daily Habits & Practices/i)).toBeTruthy();
     });
   });
 
@@ -51,7 +50,7 @@ describe('App Integration and End-to-End User Flows', () => {
     const boardBtns = screen.getAllByRole('button', { name: /100-day/i });
     if (boardBtns.length > 0) {
       fireEvent.click(boardBtns[0]);
-      expect(screen.getByText(/100-LAP TELEMETRY MATRIX/i)).toBeTruthy();
+      expect(screen.getByText(/Challenge Board/i)).toBeTruthy();
     }
 
     // Habits button
@@ -65,14 +64,14 @@ describe('App Integration and End-to-End User Flows', () => {
     const skillBtns = screen.getAllByRole('button', { name: /skills/i });
     if (skillBtns.length > 0) {
       fireEvent.click(skillBtns[0]);
-      expect(screen.getByText(/Course Curriculum & Telemetry/i)).toBeTruthy();
+      expect(screen.getByText(/Skills, Courses & Tasks/i)).toBeTruthy();
     }
 
     // Analytics
     const analyticsBtns = screen.getAllByRole('button', { name: /analytics/i });
     if (analyticsBtns.length > 0) {
       fireEvent.click(analyticsBtns[0]);
-      expect(screen.getByText(/Systematic Analytics Board/i)).toBeTruthy();
+      expect(screen.getByText(/Analytics Board/i)).toBeTruthy();
     }
 
     // Timetable & Guide
@@ -87,7 +86,7 @@ describe('App Integration and End-to-End User Flows', () => {
     if (dataBtns.length > 0) {
       fireEvent.click(dataBtns[0]);
       expect(screen.getByText(/Data Management & Time Travel/i)).toBeTruthy();
-      expect(screen.getByText(/EXPORT COMPLETE JSON BACKUP/i)).toBeTruthy();
+      expect(screen.getByText(/Export Backup/i)).toBeTruthy();
     }
   });
 });

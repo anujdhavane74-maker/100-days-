@@ -1,6 +1,15 @@
-import React from 'react';
-import { Flame, ShieldCheck, Calendar, Clock, Trophy, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  Flame,
+  ShieldCheck,
+  Calendar,
+  Clock,
+  RefreshCw,
+  Image as ImageIcon,
+  Sparkles,
+} from 'lucide-react';
 import { ChallengeDay, StreakInfo } from '../types';
+import { verstappenWallpapers, WallpaperItem } from '../data/wallpapers';
 
 interface HeaderProps {
   currentDate: string;
@@ -10,6 +19,10 @@ interface HeaderProps {
   activeTab: string;
   simulatedDate: string;
   onSetSimulatedDate: (d: string) => void;
+  currentWallpaper: string;
+  onSelectWallpaper: (url: string) => void;
+  isAutoWallpaper: boolean;
+  onToggleAutoWallpaper: (val: boolean) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -19,112 +32,167 @@ export const Header: React.FC<HeaderProps> = ({
   isSaving,
   simulatedDate,
   onSetSimulatedDate,
+  currentWallpaper,
+  onSelectWallpaper,
+  isAutoWallpaper,
+  onToggleAutoWallpaper,
 }) => {
+  const [showWallpaperMenu, setShowWallpaperMenu] = useState(false);
   const currentDay = days.find((d) => d.date === currentDate);
   const dayNum = currentDay ? currentDay.dayNumber : 1;
 
   return (
-    <header className="sticky top-0 z-40 bg-racing-darker/95 backdrop-blur-md border-b border-racing-border">
+    <header className="sticky top-0 z-40 bg-slate-950/60 backdrop-blur-xl border-b border-white/10 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Logo / Branding */}
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-racing-red to-racing-redDark flex items-center justify-center shadow-red-glow">
-              <span className="text-white font-mono font-black text-xl tracking-tighter">100</span>
+          {/* Logo / Title */}
+          <div className="flex items-center space-x-3.5">
+            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shadow-lg">
+              <span className="font-mono font-black text-lg text-white">100</span>
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-extrabold text-base sm:text-lg tracking-wider uppercase text-white">
-                  GROWTH TRACKER
+                <span className="font-bold text-base sm:text-lg tracking-wide text-white">
+                  100-Day Growth Tracker
                 </span>
-                <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest bg-racing-red/20 text-racing-red border border-racing-red/40 rounded">
-                  RACING MINDSET
+                <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono tracking-wider bg-white/10 text-slate-300 border border-white/15 rounded-full">
+                  Max Verstappen Edition
                 </span>
               </div>
-              <div className="text-xs text-racing-textSubtle flex items-center space-x-2 font-mono">
-                <span>02 NOV 2026 – 09 FEB 2027</span>
-                <span className="text-racing-border">•</span>
-                <span className="text-racing-cyan">100-DAY TELEMETRY</span>
+              <div className="text-xs text-slate-400 flex items-center space-x-2 font-mono">
+                <span>02 Nov 2026 – 09 Feb 2027</span>
+                <span className="text-white/20">•</span>
+                <span className="text-red-400">Day {dayNum} of 100</span>
               </div>
             </div>
           </div>
 
-          {/* Center / Right Telemetry Badges */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            {/* Day Number Badge */}
-            <div className="flex items-center space-x-2 bg-racing-card border border-racing-border px-3 py-1.5 rounded-lg">
-              <Calendar className="w-4 h-4 text-racing-red" />
-              <div className="text-right">
-                <div className="text-[10px] font-mono uppercase text-racing-textSubtle leading-none">
-                  DAY ON TRACK
-                </div>
-                <div className="text-sm font-mono font-bold text-white">
-                  {dayNum} <span className="text-racing-textSubtle font-normal text-xs">/ 100</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Streak Badge */}
+          {/* Center & Right Controls */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Streak Glass Pill */}
             <div
-              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border transition-all ${
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border backdrop-blur-md transition-all ${
                 streakInfo.currentStreak > 0
-                  ? 'bg-racing-red/10 border-racing-red/40 text-racing-red shadow-red-glow'
-                  : 'bg-racing-card border-racing-border text-slate-300'
+                  ? 'bg-red-500/15 border-red-500/30 text-red-400 shadow-lg shadow-red-950/30'
+                  : 'bg-white/5 border-white/10 text-slate-300'
               }`}
               title={
                 streakInfo.streakThroughYesterday
                   ? 'Streak through yesterday! Complete today to maintain it.'
-                  : `Current consecutive check-in streak: ${streakInfo.currentStreak} days`
+                  : `Current check-in streak: ${streakInfo.currentStreak} days`
               }
             >
               <Flame
                 className={`w-4 h-4 ${
-                  streakInfo.currentStreak > 0 ? 'text-racing-red animate-pulse' : 'text-slate-500'
+                  streakInfo.currentStreak > 0 ? 'text-red-500 animate-pulse' : 'text-slate-500'
                 }`}
               />
               <div className="text-right">
-                <div className="text-[10px] font-mono uppercase text-racing-textSubtle leading-none">
-                  {streakInfo.streakThroughYesterday ? 'THROUGH YESTERDAY' : 'STREAK'}
+                <div className="text-[10px] font-mono text-slate-400 leading-none">
+                  {streakInfo.streakThroughYesterday ? 'YESTERDAY' : 'STREAK'}
                 </div>
                 <div className="text-sm font-mono font-bold text-white flex items-center space-x-1">
                   <span>{streakInfo.currentStreak}</span>
-                  <span className="text-xs font-normal text-racing-textSubtle">
-                    (MAX: {streakInfo.longestStreak})
+                  <span className="text-xs font-normal text-slate-400">
+                    / {streakInfo.longestStreak} max
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Simulated Date / Track Day Selector */}
-            <div className="hidden lg:flex items-center space-x-1.5 bg-racing-surface border border-racing-border px-2.5 py-1 rounded-lg">
-              <Clock className="w-3.5 h-3.5 text-racing-cyan" />
-              <span className="text-[11px] font-mono text-racing-textMuted">SIMULATE DATE:</span>
+            {/* Dynamic Wallpaper Selector Pill */}
+            <div className="relative">
+              <button
+                onClick={() => setShowWallpaperMenu(!showWallpaperMenu)}
+                className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-xs font-mono text-slate-300 transition-all"
+                title="Change background photo"
+              >
+                <ImageIcon className="w-4 h-4 text-slate-300" />
+                <span className="hidden md:inline">Photo</span>
+              </button>
+
+              {/* Wallpaper Menu Dropdown */}
+              {showWallpaperMenu && (
+                <div className="absolute right-0 mt-2 w-72 p-3 rounded-2xl glass-panel bg-slate-900/90 border border-white/15 shadow-2xl z-50 animate-fadeIn space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-white/10 text-xs font-mono">
+                    <span className="font-bold text-white uppercase">Background Photo</span>
+                    <button
+                      onClick={() => setShowWallpaperMenu(false)}
+                      className="text-slate-400 hover:text-white"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs font-mono bg-white/5 p-2 rounded-lg">
+                    <span className="text-slate-300">Daily Auto-Rotate</span>
+                    <button
+                      onClick={() => onToggleAutoWallpaper(!isAutoWallpaper)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-all ${
+                        isAutoWallpaper
+                          ? 'bg-red-500 text-white'
+                          : 'bg-white/10 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {isAutoWallpaper ? 'ON (Day ' + dayNum + ')' : 'MANUAL'}
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+                    {verstappenWallpapers.map((w) => (
+                      <button
+                        key={w.id}
+                        onClick={() => {
+                          onSelectWallpaper(w.url);
+                          onToggleAutoWallpaper(false);
+                          setShowWallpaperMenu(false);
+                        }}
+                        className={`relative rounded-lg overflow-hidden border aspect-video group text-left transition-all ${
+                          currentWallpaper === w.url
+                            ? 'border-red-500 ring-2 ring-red-500/50'
+                            : 'border-white/10 hover:border-white/30'
+                        }`}
+                      >
+                        <img
+                          src={w.url}
+                          alt={w.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-1.5">
+                          <span className="text-[10px] font-mono text-white truncate leading-tight">
+                            {w.title.split('—')[0]}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Simulate Date Picker */}
+            <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
+              <Clock className="w-3.5 h-3.5 text-slate-400" />
               <select
-                aria-label="Simulate Date"
+                aria-label="Simulate Track Date"
                 value={simulatedDate}
                 onChange={(e) => onSetSimulatedDate(e.target.value)}
-                className="bg-transparent text-xs font-mono text-racing-cyan focus:outline-none cursor-pointer border-b border-racing-cyan/40 py-0.5"
+                className="bg-transparent text-xs font-mono text-slate-200 focus:outline-none cursor-pointer"
               >
                 {days.map((d) => (
-                  <option key={d.date} value={d.date} className="bg-racing-card text-white">
+                  <option key={d.date} value={d.date} className="bg-slate-900 text-white">
                     Day {d.dayNumber} ({d.date})
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Persistence Indicator */}
-            <div className="flex items-center space-x-1 text-xs font-mono text-racing-textSubtle">
+            {/* Sync State */}
+            <div className="flex items-center text-xs font-mono text-slate-400 pl-1" title="Saved locally in browser">
               {isSaving ? (
-                <span className="flex items-center text-racing-amber space-x-1">
-                  <RefreshCw className="w-3 h-3 animate-spin" />
-                  <span className="hidden sm:inline">SAVING</span>
-                </span>
+                <RefreshCw className="w-4 h-4 text-amber-400 animate-spin" />
               ) : (
-                <span className="flex items-center text-emerald-400 space-x-1" title="Stored locally in IndexedDB">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span className="hidden md:inline">SYNCED</span>
-                </span>
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
               )}
             </div>
           </div>

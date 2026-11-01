@@ -182,3 +182,4 @@ export function computeDayStatuses(days: ChallengeDay[], currentDateStr: string)
     return { ...day, status };
   });
 }
+
