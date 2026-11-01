@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-racing-bg text-slate-100 antialiased selection:bg-racing-red selection:text-white;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0d111a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #243044;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ee2737;
+  }
+}
+
+/* Motorsport telemetry accents */
+.racing-border {
+  border: 1px solid #243044;
+}
+
+.racing-border-red {
+  border-color: rgba(238, 39, 55, 0.4);
+}
+
+.racing-gradient-red {
+  background: linear-gradient(135deg, rgba(238, 39, 55, 0.15) 0%, rgba(17, 23, 35, 0.8) 100%);
+}
+
+.racing-card {
+  @apply bg-racing-card border border-racing-border rounded-xl shadow-card transition-all duration-200;
+}
+
+.racing-card-hover {
+  @apply hover:border-slate-600 hover:bg-racing-cardHover;
+}
+
+.telemetry-tag {
+  @apply text-xs font-mono tracking-wider uppercase px-2 py-0.5 rounded font-semibold;
+}
+
+/* Glow effects */
+.glow-red {
+  box-shadow: 0 0 15px rgba(238, 39, 55, 0.25);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
