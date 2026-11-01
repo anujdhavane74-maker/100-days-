@@ -4,8 +4,11 @@ import { AppState } from '../types';
 const STORAGE_SUPABASE_URL_KEY = 'growth_tracker_supabase_url';
 const STORAGE_SUPABASE_KEY_KEY = 'growth_tracker_supabase_anon_key';
 
+const DEFAULT_SUPABASE_URL = 'https://juygiovirtyxnljdomxg.supabase.co';
+const DEFAULT_SUPABASE_KEY = 'sb_publishable_InXoJDV8KdGDLBfdaP1JZA_bCcB3PMP';
+
 /**
- * Retrieves configured Supabase credentials from environment or localStorage.
+ * Retrieves configured Supabase credentials from environment, localStorage, or pre-configured defaults.
  */
 export function getSupabaseConfig(): { url: string; anonKey: string } {
   const envUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
@@ -21,8 +24,8 @@ export function getSupabaseConfig(): { url: string; anonKey: string } {
   }
 
   return {
-    url: envUrl || storedUrl,
-    anonKey: envKey || storedKey,
+    url: storedUrl || envUrl || DEFAULT_SUPABASE_URL,
+    anonKey: storedKey || envKey || DEFAULT_SUPABASE_KEY,
   };
 }
 
@@ -162,3 +165,4 @@ create policy "Users can insert/update own tracker data"
   on public.growth_tracker_data for all
   using (auth.uid() = user_id);
 `;
+
