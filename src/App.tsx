@@ -4,6 +4,12 @@ import { loadAppState, saveAppState, resetAppState } from './storage/db';
 import { getChallengeCurrentDate, calculateStreak, computeDayStatuses } from './utils/streak';
 import { calculateOverviewMetrics } from './utils/analytics';
 import { getWallpaperForDay, verstappenWallpapers } from './data/wallpapers';
+import {
+  getSupabaseClient,
+  fetchCloudTrackerState,
+  saveCloudTrackerState,
+} from './services/supabase';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { Header } from './components/Header';
 import { Navigation, NavTabId } from './components/Navigation';
 import { DashboardView } from './views/DashboardView';
@@ -14,6 +20,7 @@ import { SkillsTasksView } from './views/SkillsTasksView';
 import { AnalyticsView } from './views/AnalyticsView';
 import { TimetableGuideView } from './views/TimetableGuideView';
 import { SettingsDataView } from './views/SettingsDataView';
+import { AuthView } from './views/AuthView';
 import { Flag, Sparkles } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -22,6 +29,11 @@ export const App: React.FC = () => {
   const [selectedDayNumber, setSelectedDayNumber] = useState<number>(1);
   const [simulatedDate, setSimulatedDate] = useState<string>('2026-11-02');
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  // Supabase Auth state
+  const [currentUser, setCurrentUser] = useState<SupabaseUser | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
 
   // Background Wallpaper state
   const [currentWallpaper, setCurrentWallpaper] = useState<string>(
@@ -29,17 +41,55 @@ export const App: React.FC = () => {
   );
   const [isAutoWallpaper, setIsAutoWallpaper] = useState<boolean>(true);
 
-  // Initialize state from IndexedDB
+  // Initialize state from IndexedDB and Supabase session
   useEffect(() => {
     async function init() {
-      const state = await loadAppState();
-      setAppState(state);
-      const effectiveDate = getChallengeCurrentDate(state.days);
+      // 1. Load local state first
+      const localState = await loadAppState();
+      setAppState(localState);
+      const effectiveDate = getChallengeCurrentDate(localState.days);
       setSimulatedDate(effectiveDate);
-      const curDay = state.days.find((d) => d.date === effectiveDate);
+      const curDay = localState.days.find((d) => d.date === effectiveDate);
       if (curDay) {
         setSelectedDayNumber(curDay.dayNumber);
         setCurrentWallpaper(getWallpaperForDay(curDay.dayNumber).url);
+      }
+
+      // 2. Check Supabase auth session if client exists
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        try {
+          const { data } = await supabase.auth.getSession();
+          if (data.session?.user) {
+            setCurrentUser(data.session.user);
+            // Try fetching cloud state
+            const cloudState = await fetchCloudTrackerState(data.session.user.id);
+            if (cloudState && cloudState.config) {
+              const cloudUpdated = new Date(cloudState.config.updatedAt || 0).getTime();
+              const localUpdated = new Date(localState.config.updatedAt || 0).getTime();
+              // If cloud is newer or equal, use cloud state
+              if (cloudUpdated >= localUpdated) {
+                setAppState(cloudState);
+                await saveAppState(cloudState);
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('Initial cloud auth sync check:', err);
+        }
+
+        // Listen for auth state changes
+        supabase.auth.onAuthStateChange(async (_event, session) => {
+          const user = session?.user || null;
+          setCurrentUser(user);
+          if (user) {
+            const cloudState = await fetchCloudTrackerState(user.id);
+            if (cloudState && cloudState.config) {
+              setAppState(cloudState);
+              await saveAppState(cloudState);
+            }
+          }
+        });
       }
     }
     init();
@@ -74,57 +124,44 @@ export const App: React.FC = () => {
   const streakInfo = calculateStreak(appState.days, simulatedDate);
   const overviewMetrics = calculateOverviewMetrics(appState.days, appState.tasks, simulatedDate);
 
-  const handleSaveDay = async (updatedDay: ChallengeDay, _shouldClose: boolean) => {
+  // Helper to persist state to both local DB and cloud if logged in
+  const persistState = async (newState: AppState) => {
     setIsSaving(true);
+    setAppState(newState);
+    await saveAppState(newState);
+    setIsSaving(false);
+
+    // Sync with Supabase if logged in
+    if (currentUser) {
+      saveCloudTrackerState(currentUser.id, newState).catch((err) =>
+        console.warn('Async cloud sync warning:', err)
+      );
+    }
+  };
+
+  const handleSaveDay = async (updatedDay: ChallengeDay, _shouldClose: boolean) => {
     const newDays = appState.days.map((d) =>
       d.dayNumber === updatedDay.dayNumber ? updatedDay : d
     );
-    const newState: AppState = {
-      ...appState,
-      days: newDays,
-    };
-    setAppState(newState);
-    await saveAppState(newState);
-    setIsSaving(false);
+    await persistState({ ...appState, days: newDays });
   };
 
   const handleAddHabit = async (newHabit: HabitItem) => {
-    setIsSaving(true);
-    const newState: AppState = {
-      ...appState,
-      habits: [...appState.habits, newHabit],
-    };
-    setAppState(newState);
-    await saveAppState(newState);
-    setIsSaving(false);
+    await persistState({ ...appState, habits: [...appState.habits, newHabit] });
   };
 
   const handleToggleHabitActive = async (habitId: string) => {
-    setIsSaving(true);
     const newHabits = appState.habits.map((h) =>
       h.id === habitId ? { ...h, active: !h.active } : h
     );
-    const newState: AppState = {
-      ...appState,
-      habits: newHabits,
-    };
-    setAppState(newState);
-    await saveAppState(newState);
-    setIsSaving(false);
+    await persistState({ ...appState, habits: newHabits });
   };
 
   const handleUpdateTask = async (updatedTask: TaskItem) => {
-    setIsSaving(true);
     const newTasks = appState.tasks.map((t) =>
       t.id === updatedTask.id ? updatedTask : t
     );
-    const newState: AppState = {
-      ...appState,
-      tasks: newTasks,
-    };
-    setAppState(newState);
-    await saveAppState(newState);
-    setIsSaving(false);
+    await persistState({ ...appState, tasks: newTasks });
   };
 
   const handleUpdateModule = async (
@@ -133,7 +170,6 @@ export const App: React.FC = () => {
     watchedMinutes: number,
     completed: boolean
   ) => {
-    setIsSaving(true);
     const newCourses = appState.courses.map((course) => {
       if (course.id !== courseId) return course;
       const newModules = course.modules.map((m) =>
@@ -142,20 +178,11 @@ export const App: React.FC = () => {
       return { ...course, modules: newModules };
     });
 
-    const newState: AppState = {
-      ...appState,
-      courses: newCourses,
-    };
-    setAppState(newState);
-    await saveAppState(newState);
-    setIsSaving(false);
+    await persistState({ ...appState, courses: newCourses });
   };
 
   const handleImportState = async (imported: AppState) => {
-    setIsSaving(true);
-    setAppState(imported);
-    await saveAppState(imported);
-    setIsSaving(false);
+    await persistState(imported);
   };
 
   const handleResetState = async () => {
@@ -165,6 +192,25 @@ export const App: React.FC = () => {
     setSelectedDayNumber(1);
     setSimulatedDate('2026-11-02');
     setIsSaving(false);
+
+    if (currentUser) {
+      await saveCloudTrackerState(currentUser.id, fresh);
+    }
+  };
+
+  const handleManualSyncNow = async () => {
+    if (!currentUser || !appState) return;
+    setIsSyncing(true);
+    try {
+      await saveCloudTrackerState(currentUser.id, appState);
+      const latestCloud = await fetchCloudTrackerState(currentUser.id);
+      if (latestCloud) {
+        setAppState(latestCloud);
+        await saveAppState(latestCloud);
+      }
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const handleNavigate = (tab: NavTabId, dayNumber?: number) => {
@@ -183,7 +229,6 @@ export const App: React.FC = () => {
           alt="Max Verstappen Background"
           className="w-full h-full object-cover object-center transition-all duration-1000 brightness-[0.4] contrast-[1.05] scale-105"
         />
-        {/* Sleek Frosted Glass Backdrop Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/75 to-slate-950/85 backdrop-blur-[2px]" />
       </div>
 
@@ -205,6 +250,8 @@ export const App: React.FC = () => {
           onSelectWallpaper={setCurrentWallpaper}
           isAutoWallpaper={isAutoWallpaper}
           onToggleAutoWallpaper={setIsAutoWallpaper}
+          onOpenAuth={() => setShowAuthModal(true)}
+          userEmail={currentUser?.email || null}
         />
 
         <Navigation
@@ -213,7 +260,7 @@ export const App: React.FC = () => {
           isTodayCheckedIn={streakInfo.isTodayCheckedIn}
         />
 
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7">
           {activeTab === 'dashboard' && (
             <DashboardView
               currentDate={simulatedDate}
@@ -298,6 +345,19 @@ export const App: React.FC = () => {
           )}
         </main>
       </div>
+
+      {/* Supabase Glassmorphic Auth & Cloud Sync Modal */}
+      {showAuthModal && (
+        <AuthView
+          currentUser={currentUser}
+          onAuthSuccess={(user) => {
+            setCurrentUser(user);
+          }}
+          onClose={() => setShowAuthModal(false)}
+          onSyncNow={handleManualSyncNow}
+          isSyncing={isSyncing}
+        />
+      )}
     </div>
   );
 };

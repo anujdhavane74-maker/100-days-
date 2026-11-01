@@ -7,6 +7,8 @@ import {
   RefreshCw,
   Image as ImageIcon,
   Sparkles,
+  Cloud,
+  User,
 } from 'lucide-react';
 import { ChallengeDay, StreakInfo } from '../types';
 import { verstappenWallpapers, WallpaperItem } from '../data/wallpapers';
@@ -23,6 +25,8 @@ interface HeaderProps {
   onSelectWallpaper: (url: string) => void;
   isAutoWallpaper: boolean;
   onToggleAutoWallpaper: (val: boolean) => void;
+  onOpenAuth: () => void;
+  userEmail: string | null;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -36,6 +40,8 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectWallpaper,
   isAutoWallpaper,
   onToggleAutoWallpaper,
+  onOpenAuth,
+  userEmail,
 }) => {
   const [showWallpaperMenu, setShowWallpaperMenu] = useState(false);
   const currentDay = days.find((d) => d.date === currentDate);
@@ -186,6 +192,22 @@ export const Header: React.FC<HeaderProps> = ({
                 ))}
               </select>
             </div>
+
+            {/* Cloud Sync / Profile Button */}
+            <button
+              onClick={onOpenAuth}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border backdrop-blur-md text-xs font-mono transition-all ${
+                userEmail
+                  ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/25'
+                  : 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-300'
+              }`}
+              title={userEmail ? `Cloud synced as ${userEmail}` : 'Connect Supabase Cloud Sync'}
+            >
+              <Cloud className={`w-3.5 h-3.5 ${userEmail ? 'text-cyan-400' : 'text-slate-400'}`} />
+              <span className="hidden sm:inline">
+                {userEmail ? userEmail.split('@')[0] : 'Sync'}
+              </span>
+            </button>
 
             {/* Sync State */}
             <div className="flex items-center text-xs font-mono text-slate-400 pl-1" title="Saved locally in browser">

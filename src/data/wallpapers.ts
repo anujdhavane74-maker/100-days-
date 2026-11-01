@@ -87,3 +87,4 @@ export function getWallpaperForDay(dayNumber: number): WallpaperItem {
   const index = (dayNumber - 1) % verstappenWallpapers.length;
   return verstappenWallpapers[index];
 }
+
